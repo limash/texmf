@@ -270,4 +270,18 @@ DOI = {10.5194/gmd-9-2271-2016}
   author = {Bernard P. Boudreau},
 }
 
+@Article{Moore2011,
+  author   = {Andrew M. Moore and Hernan G. Arango and Gregoire Broquet and Brian S. Powell and Anthony T. Weaver and Javier Zavala-Garay},
+  title    = {The Regional Ocean Modeling System (ROMS) 4-dimensional variational data assimilation systems: Part I – System overview and formulation},
+  journal  = {Progress in Oceanography},
+  year     = {2011},
+  volume   = {91},
+  number   = {1},
+  pages    = {34 - 49},
+  issn     = {0079-6611},
+  abstract = {The Regional Ocean Modeling System (ROMS) is one of the few community ocean general circulation models for which a 4-dimensional variational data assimilation (4D-Var) capability has been developed. The \{ROMS\} 4D-Var capability is unique in that three variants of 4D-Var are supported: a primal formulation of incremental strong constraint 4D-Var (I4D-Var), a dual formulation based on a physical-space statistical analysis system (4D-PSAS), and a dual formulation representer-based variant of 4D-Var (R4D-Var). In each case, \{ROMS\} is used in conjunction with available observations to identify a best estimate of the ocean circulation based on a set of a priori hypotheses about errors in the initial conditions, boundary conditions, surface forcing, and errors in the model in the case of 4D-PSAS and R4D-Var. In the primal formulation of I4D-Var the search for the best circulation estimate is performed in the full space of the model control vector, while for the dual formulations of 4D-PSAS and R4D-Var only the sub-space of linear functions of the model state vector spanned by the observations (i.e. the dual space) is searched. In oceanographic applications, the number of observations is typically much less than the dimension of the model control vector, so there are clear advantages to limiting the search to the space spanned by the observations. In the case of 4D-PSAS and R4D-Var, the strong constraint assumption (i.e. that the model is error free) can be relaxed leading to the so-called weak constraint formulation. This paper describes the three aforementioned variants of 4D-Var as they are implemented in ROMS. Critical components that are common to each approach are conjugate gradient descent, preconditioning, and error covariance models, which are also described. Finally, several powerful 4D-Var diagnostic tools are discussed, namely computation of posterior errors, eigenvector analysis of the posterior error covariance, observation impact, and observation sensitivity.},
+  doi      = {https://doi.org/10.1016/j.pocean.2011.05.004},
+  url      = {http://www.sciencedirect.com/science/article/pii/S0079661111000516},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
