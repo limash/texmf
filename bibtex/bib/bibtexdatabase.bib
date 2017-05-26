@@ -284,4 +284,18 @@ DOI = {10.5194/gmd-9-2271-2016}
   url      = {http://www.sciencedirect.com/science/article/pii/S0079661111000516},
 }
 
+@Article{Shchepetkin2005,
+  author   = {Alexander F. Shchepetkin and James C. McWilliams},
+  title    = {The regional oceanic modeling system (ROMS): a split-explicit, free-surface, topography-following-coordinate oceanic model},
+  journal  = {Ocean Modelling},
+  year     = {2005},
+  volume   = {9},
+  number   = {4},
+  pages    = {347 - 404},
+  issn     = {1463-5003},
+  abstract = {The purpose of this study is to find a combination of optimal numerical algorithms for time-stepping and mode-splitting suitable for a high-resolution, free-surface, terrain-following coordinate oceanic model. Due to mathematical feedback between the baroclinic momentum and tracer equations and, similarly, between the barotropic momentum and continuity equations, it is advantageous to treat both modes so that, after a time step for the momentum equation, the computed velocities participate immediately in the computation of tracers and continuity, and vice versa, rather than advancing all equations for one time step simultaneously. This leads to a new family of time-stepping algorithms that combine forward–backward feedback with the best known synchronous algorithms, allowing an increased time step due to the enhanced internal stability without sacrificing its accuracy. Based on these algorithms we design a split-explicit hydrodynamic kernel for a realistic oceanic model, which addresses multiple numerical issues associated with mode splitting. This kernel utilizes consistent temporal averaging of the barotropic mode via a specially designed filter function to guarantee both exact conservation and constancy preservation properties for tracers and yields more accurate (up to second-order), resolved barotropic processes, while preventing aliasing of unresolved barotropic signals into the slow baroclinic motions. It has a more accurate mode-splitting due to redefined barotropic pressure-gradient terms to account for the local variations in density field, while maintaining the computational efficiency of a split model. It is naturally compatible with a variety of centered and upstream-biased high-order advection algorithms, and helps to mitigate computational cost of expensive physical parameterization of mixing processes and submodels.},
+  doi      = {https://doi.org/10.1016/j.ocemod.2004.08.002},
+  url      = {http://www.sciencedirect.com/science/article/pii/S1463500304000484},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
