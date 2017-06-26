@@ -105,7 +105,7 @@
 
 @Article{ersem2016,
   Title                    = {ERSEM~15.06: a generic model for marine biogeochemistry and the ecosystem dynamics of the lower trophic levels},
-  Author                   = {Butensch\"on, M. and Clark, J. and Aldridge, J. N. and Allen, J. I. and Artioli, Y. and Blackford, J. and Bruggeman, J. and Cazenave, P. and Ciavatta, S. and Kay, S. and Lessin, G. and van Leeuwen, S. and van der Molen, J. and de Mora, L. and Polimene, L. and Sailley, S. and Stephens, N. and Torres, R.},
+  Author                   = {Butensch\"on, M. and Clark, J. and Aldridge, J. N. and Allen, J. I. and Artioli, Y. and Blackford, J. and Bruggeman, J. and Cazenave, P. and Ciavatta, S. and Kay, S. and Lessin, G. and van Leewen, S. and van der Molen, J. and de Mora, L. and Polimene, L. and Sailley, S. and Stephens, N. and Torres, R.},
   Journal                  = {Geoscientific Model Development},
   Year                     = {2016},
   Number                   = {4},
@@ -179,6 +179,24 @@
   Url                      = {http://dx.doi.org/10.1029/2006JC003977}
 }
 
+@Article{luff2001,
+  Title                    = {Robust and fast FORTRAN and MATLAB® libraries to calculate pH distributions in marine systems},
+  Author                   = {Roger Luff and Matthias Haeckel and Klaus Wallmann},
+  Journal                  = {Computers \& Geosciences},
+  Year                     = {2001},
+  Number                   = {2},
+  Pages                    = {157 - 169},
+  Volume                   = {27},
+
+  Abstract                 = {Three “easy-to-use solvers” are presented for the approximation of pH and the concentrations of protolytic species in marine aqueous systems. The first one is based on the conservation of alkalinity, the second one describes the progress (advancement) of a chemical reaction towards its state of equilibrium, and the third one is based on the conservation of the charges in the system (charge balance). They are developed for steady state or non-steady state modelling, but they are also useful for pH calculations from measured data sets. To demonstrate their numerical stability over a wide range of pH, the solvers are tested with random input values. Internal consistency is checked by mass and charge conservation and by comparing the results of each solver. In closed systems, equilibrium calculations lead to identical pH values and species concentrations, as expected. The three approaches are also tested in a non-steady-state transport-reaction model that simulates early diagenesis in oxic deep-sea sediments as well as in reactive sediments from the deep Arabian Sea. In the model, dissolved carbonate species are either transported as individual species (CO2, HCO3−, CO32−) or as summed variables (TCO2, alkalinity). In the first case, the species are transported according to their individual molecular diffusion coefficients and concentration gradients. In the second case, protolytic species are transported along the gradient of summed concentrations using weighted average diffusion coefficients. The advancement approach is coupled with transport of the individual species, whereas the alkalinity conservation and the charge balance approaches are applied to transport of summed variables. The model results show that the approaches lead to non-negligible differences in the species distribution and the pH. With intensive calcium carbonate dissolution, the thermodynamically-controlled dissolution rates dominate the system; in this case, the differences in the species distribution between the three solvers and the two transport schemes can be neglected, but strong differences in the calculated fluxes between sediment and bottom water can be observed.},
+  Doi                      = {http://dx.doi.org/10.1016/S0098-3004(00)00097-2},
+  ISSN                     = {0098-3004},
+  Keywords                 = {pH calculation},
+  Owner                    = {shamil},
+  Timestamp                = {2017.06.22},
+  Url                      = {http://www.sciencedirect.com/science/article/pii/S0098300400000972}
+}
+
 @Article{Mobley2012,
   Title                    = {Improved irradiances for use in ocean heating, primary production, and photo-oxidation calculations},
   Author                   = {Curtis D. Mobley and Emmanuel S. Boss},
@@ -210,6 +228,21 @@
   Doi                      = {https://doi.org/10.1016/j.pocean.2011.05.004},
   ISSN                     = {0079-6611},
   Url                      = {http://www.sciencedirect.com/science/article/pii/S0079661111000516}
+}
+
+@Article{munhoven2013,
+  Title                    = {Mathematics of the total alkalinity–pH equation - pathway to robust and universal solution algorithms: the SolveSAPHE package v1.0.1},
+  Author                   = {Munhoven, G.},
+  Journal                  = {Geoscientific Model Development},
+  Year                     = {2013},
+  Number                   = {4},
+  Pages                    = {1367--1388},
+  Volume                   = {6},
+
+  Doi                      = {10.5194/gmd-6-1367-2013},
+  Owner                    = {shamil},
+  Timestamp                = {2017.06.22},
+  Url                      = {http://www.geosci-model-dev.net/6/1367/2013/}
 }
 
 @Article{Perovich2007,
@@ -294,8 +327,8 @@
   Author                   = {Letizia Tedesco and Marcello Vichi and Jari Haapala and Tapani Stipa},
   Journal                  = {Ocean Modelling},
   Year                     = {2010},
-  Number                   = {1–2},
-  Pages                    = {89 - 104},
+  Number                   = {1-2},
+  Pages                    = {89-104},
   Volume                   = {35},
 
   Abstract                 = {This work introduces a novel approach for the modelling and coupling of sea ice biology to sea ice physics. The central concept of the coupling is the definition of the Biologically Active Layer, which is the time-varying fraction of sea ice that is connected to the ocean via brine pockets and channels, and acts as a rich habitat for many microorganisms. A simple but comprehensive physical model of the sea ice thermo-halodynamics is coupled to a novel sea ice microalgal model of growth in the framework of the Biogeochemical Flux Model. The physical model provides the key physical properties of the Biologically Active Layer and the biological model simulates the physiological and ecological response of the algal community to the physical environment. Numerical simulations of chl-a were compared with observations at two different ice stations, in the Baltic and off the coast of Greenland, showing that this new coupling structure is sufficiently generic to represent well the temporal and spatial distribution of sea ice algae during the whole ice season at both sites. This model implementation and coupling structure is viable as a new component of General Circulation Models, allowing for estimates of the role and importance of sea ice biology in the local and global carbon cycle.},
@@ -344,9 +377,9 @@
   Author                   = {M. Vichi and N. Pinardi and S. Masina},
   Journal                  = {Journal of Marine Systems},
   Year                     = {2007},
-  Note                     = {Contributions from Advances in Marine Ecosystem Modelling Research, 27-29 June, 2005, Plymouth, \{UKAMEMR\}},
-  Number                   = {1–4},
-  Pages                    = {89 - 109},
+  Note                     = {Contributions from Advances in Marine Ecosystem Modelling Research, 27-29 June, 2005, Plymouth},
+  Number                   = {1-4},
+  Pages                    = {89-109},
   Volume                   = {64},
 
   Abstract                 = {The set of equations for global ocean biogeochemistry deterministic models have been formulated in a comprehensive and unified form in order to use them in numerical simulations of the marine ecosystem for climate change studies (PELAGOS, \{PELAgic\} biogeochemistry for Global Ocean Simulations). The fundamental approach stems from the representation of marine trophic interactions and major biogeochemical cycles introduced in the European Regional Seas Ecosystem Model (ERSEM). Our theoretical formulation revisits and generalizes the stoichiometric approach of \{ERSEM\} by defining the state variables as Chemical Functional Families (CFF). \{CFFs\} are further subdivided into living, non-living and inorganic components. Living \{CFFs\} are the basis for the definition of Living Functional Groups, the biomass-based functional prototype of the real organisms. Both \{CFFs\} and \{LFGs\} are theoretical constructs which allow us to relate measurable properties of marine biogeochemistry to the state variables used in deterministic models. This approach is sufficiently generic that may be used to describe other existing biomass-based ecosystem model.},
