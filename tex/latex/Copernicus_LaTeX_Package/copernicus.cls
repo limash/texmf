@@ -12,11 +12,11 @@
 %% This file is part of the copernicus package for papers
 %% published by Copernicus Publications (Copernicus GmbH).
 %% 
-%%       Copyright (C) 2017 by Copernicus Publications
+%%       Copyright (C) 2018 by Copernicus Publications
 %% -----------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{copernicus}
-    [2017/03/16 8.37 Copernicus papers]
+    [2018/01/30 8.67 Copernicus papers]
 \frenchspacing
 \clubpenalty10000
 \widowpenalty10000
@@ -66,6 +66,7 @@
 \newif\if@sansserifface
 \newif\if@sansserifheader
 \newif\if@abstractcentered
+\newif\if@abstractindented
 \newif\if@noauthor       \DeclareOption{noauthor}{\@noauthortrue}
 \newif\if@nolastpage     \DeclareOption{nolastpage}{\@nolastpagetrue}
 \newif\if@noref          \DeclareOption{noref}{\@noreftrue}
@@ -88,6 +89,8 @@
 \newif\if@corrigendum%ask Jasch
 \newif\if@editorialnotetwoc%ask Jasch
 \newif\if@editorialnoted%ask Jasch
+\newif\if@secline% Underlined Sections, lup 2017-11-06
+\newif\if@dolinesec\@dolinesecfalse
 \newif\if@bar            %only used under \if@stage@final and \@cop@hometrue; for modern layout as well as for the classically layouted sub-journal "angeocom"
 \newif\if@hvmath         \DeclareOption{hvmath}{\@hvmathtrue}%only used for discussions and only under \@cop@hometrue
 \InputIfFileExists{copernicus.cfg}%
@@ -104,6 +107,7 @@
   \@sansseriffacefalse
   \@sansserifheaderfalse
   \@abstractcenteredfalse
+  \@abstractindentedfalse
 \fi
 \AtEndOfClass{\ifcopyediting\let\@msnumber\relax\fi}
 \LoadClass[fleqn]{article}
@@ -380,8 +384,8 @@
             {0.6\textwidth}
             {\if@sansserifheader\leavevmode\runningheaderfont\fi
              \@journalInfo\\
-             \@journalurlInfo\\
-             doi:10.5194/%
+             %\@journalurlInfo\\ %raus laut Ticket 4529
+             https://doi.org/10.5194/%
              \if@noref
                \@msnumber
              \else
@@ -432,13 +436,21 @@
   \if!\@runtit!\UndefinedError{\string\runningtitle}\fi}
 \def\maketitle{%
   \gdef\supplement##1{%
-    \href{http://dx.doi.org/10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear-supplement}%
-         {doi:10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear-supplement}}%
-  \ifodd\@fpage\else
-    \CopernicusError
-    {Starting page must be odd!}{change the firstpage command}
+    \href{https://doi.org/10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear-supplement}%
+         {https://doi.org/10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear-supplement}}%
+  \ifnum\@fpage<0
+    \CopernicusError{No article number given but citation by article number required}
+                    {Please provide \string\articlenumber.}
   \fi
-  \ifx\specialp@perstring\@undefined\setcounter{page}{\@fpage}\fi
+  \ifx\citati@nbyarticlenumber\@undefined
+    \ifodd\@fpage\else
+      \CopernicusError
+      {Starting page must be odd!}{change the firstpage command}%
+    \fi
+    \ifx\specialp@perstring\@undefined
+      \setcounter{page}{\@fpage}%
+    \fi
+  \fi
   \setcounter{footnote}{0}%
   \if@stage@final\if@manuscript\else\thispagestyle{titlepage}\fi\fi
   \begingroup
@@ -552,7 +564,8 @@
        \let\and=\sw@and
        \flushleft
        \@author\\[4pt]
-       \ifx\@corresp\@empty\else\textit{Correspondence to:} \@corresp\fi
+       \ifx\@corresp\@empty\else\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} Correspondence:}} \@corresp\ifx\@howtocite\@empty\else\\[4pt]\fi\fi
+       \ifx\@howtocite\@empty\else\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} How to cite:}} \@howtocite\fi
        \par}%
     \fi
     \@thanks
@@ -573,7 +586,7 @@
                \hsize\linewidth
                \@maketitle@setup
                \centering
-               \center{\sffamily\LARGE\bfseries\if@sansserifface\mathversion{sansbold}\else\mathversion{bold}\fi\color{textcol}%
+               \center{\LARGE\bfseries\if@sansserifface\sffamily\mathversion{sansbold}\else\mathversion{bold}\fi\color{textcol}%
                        \ifx\specialp@perstring\@undefined\else\textit{{\specialp@perstring} to}\break``\fi
                        \@title
                        \ifx\specialp@perstring\@undefined
@@ -594,7 +607,8 @@
                   \@author\par}%
                  \vskip-0.5\baselineskip
                \fi
-               \ifx\@corresp\@empty\else\vskip\topsep\centering\textit{Correspondence to:}\space\@corresp\fi
+               \ifx\@corresp\@empty\else\vskip\topsep\centering\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} Correspondence:}}\space\@corresp\fi
+               \ifx\@howtocite\@empty\else\vskip.5\topsep\centering\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} How to cite:}}\space\@howtocite\fi
                \par\vskip0.33\baselineskip
                {\small
                 \ifx\specialp@perstring\@undefined
@@ -619,11 +633,14 @@
                  \advance\hsize-2\fboxsep\advance\hsize-2\fboxrule
                  \parskip\z@
                  \trivlist\item\relax
-                   \textcolor{textcol}{\reset@font\normalsize\sffamily\bfseries\abstractname.}%
+                   \textcolor{textcol}{\reset@font\normalsize\if@sansserifface\sffamily\fi\bfseries\abstractname.}%
                    \enspace\ignorespaces\@abstr
+                   \ifx\second@bstract\@undefined\else\par\vspace{1.7mm}\noindent
+                     \second@bstract
+                   \fi
                    \if!\@keyw!\else
                      \par\vspace{1.7mm}\noindent
-                     \textcolor{textcol}{\reset@font\normalsize\sffamily\bfseries Keywords.}%
+                     \textcolor{textcol}{\reset@font\normalsize\if@sansserifface\sffamily\fi\bfseries Keywords.}%
                      \enspace\ignorespaces\@keyw
                    \fi
                  \endtrivlist
@@ -631,8 +648,9 @@
                \fi
            \endlist
            \par\vspace{1.5\baselineskip}}}
-  \else%classical
-    \def\@@maketitlefinal{%
+  \else%classical or indented
+    \if@abstractindented%% indented
+      \def\@@maketitlefinal{%
           \vspace*{36mm}%
           {\@maketitle@setup
            \raggedright
@@ -657,8 +675,76 @@
               \@author\par}%
               \vskip-0.25\baselineskip
            \fi
+           \@thanks}
+           %% NEU:
+           \ifnum\ifx\@corresp\@empty\ifx\@howtocite\@empty\if!\@recvd!\ifx\abstractexists\@undefined\ifx\@published\@undefined0\else1\fi\else1\fi\else1\fi\else1\fi\else1\fi=1\relax
+             \par\vskip1.5\baselineskip
+             \def\labelfont{\bfseries\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol}}%
+             \list{}{\labelwidth35mm%
+                        \leftmargin\labelwidth
+                        \itemsep4mm
+                        \labelsep\z@
+                        \xdef\@indescription{}%
+                        \def\makelabel##1{\labelfont##1\hss}}%
+               \ifx\@corresp\@empty\else\item[{Correspondence:}]\@corresp\fi
+               \ifnum\ifx\@published\@undefined\ifx\specialp@perstring\@undefined\if!\@recvd!0\else1\fi\else0\fi\else1\fi=1\relax
+                 \item[{Relevant dates:}]%
+               \fi
+               \bgroup\raggedright
+               \ifx\specialp@perstring\@undefined
+                 \if!\@recvd!
+                 \else
+                     \strut\hbox{Received:\nobreakspace\@recvd}%
+                   \def\datesep{ -- }%
+                   \if@twostagejnl\ifx\@pubdiscuss\@empty\else
+                     \datesep \hbox{Discussion started:\nobreakspace\@pubdiscuss}\def\datesep{\newline\def\datesep{ -- }}%
+                   \fi\fi
+                   \if!\@revsd!\else\datesep \hbox{Revised:\nobreakspace\@revsd}\fi
+                   \if!\@accptd!\else\datesep \hbox{Accepted:\nobreakspace\@accptd}\fi
+                   \ifx\@published\@undefined\else\datesep\fi
+                 \fi
+               \fi
+               \ifx\@published\@undefined\else Published:\nobreakspace\@published\fi
+               \par\egroup
+               \ifx\@howtocite\@empty\else\item[{How to cite:}]\@howtocite\fi
+               \ifx\abstractexists\@undefined
+               \else
+                 \item[\abstractname:]\@abstr%
+                   \ifx\second@bstract\@undefined\else\item[\secabstractname:]\second@bstract\fi
+                   \if!\@keyw!\else\item[Keywords:]\@keyw\fi
+               \fi
+             \endlist
+           \fi
+           \vspace{20pt}}
+    \else%% classical
+      \def\@@maketitlefinal{%
+          \vspace*{36mm}%
+          {\@maketitle@setup
+           \raggedright
+           {\LARGE\bfseries\if@sansserifface\if@sansserifface\sffamily\fi\mathversion{sansbold}\else\mathversion{bold}\fi\color{textcol}%
+            \ifx\specialp@perstring\@undefined\else\textit{{\specialp@perstring} to}\break``\fi
+            \@title
+            \ifx\specialp@perstring\@undefined
+            \else
+              ''\if@noref,\else\space published in\fi\space
+              \@journalnameabbreviation,
+              \if@noref\@msnumber \else \@pvol, \@fpage\if@nolastpage\else{--\@lpage}\fi\fi, \@pyear
+            \fi
+            \par}%
+           \if@noauthor
+           \else
+             \vspace{\baselineskip}%
+             {\normalsize
+              \renewcommand\Authfont{\bfseries}%
+              \renewcommand\Affilfont{\mdseries}%
+              \setlength\affilsep{4pt}%
+              \let\and=\sw@and
+              \@author\par}%
+              \vskip-0.25\baselineskip
+           \fi
            \@thanks
-           \ifx\@corresp\@empty\else\vskip\baselineskip\textit{Correspondence to:}\space\@corresp\fi
+           \ifx\@corresp\@empty\else\vskip\baselineskip\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} Correspondence:}}\space\@corresp\fi
+           \ifx\@howtocite\@empty\else\vskip.75\baselineskip\textbf{{\if@sansserifface\sffamily\fi\upshape\noindent\color{textcol} How to cite:}}\space\@howtocite\fi
            \par\vspace{10pt}%
            \ifx\specialp@perstring\@undefined
              \if!\@recvd!
@@ -675,6 +761,7 @@
            \fi
            \ifx\@published\@undefined\else Published: \@published\fi
            \vspace{20pt}}}
+     \fi
   \fi
 \else%discussions
   \def\titleheight#1{\def\@tithei{#1}} \def\@tithei{7.5cm}%reserved for future usage
@@ -698,7 +785,7 @@
         %\@journalInfo\\
         %\@journalurlInfo\\
         %\if@noref\else
-        %   doi:10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear
+        %   https://doi.org/10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear
         %\fi\\
         %\@journalcopyright
         \ifx\specialp@perstring\@undefined\else{\specialp@perstring} to\space\fi
@@ -750,11 +837,11 @@
     \fi
     \if@cop@home
       {\small Received: \@recvd\ -- Accepted: \@accptd\ -- Published: \@published\\*[2mm]
-       \if@noauthor\else Correspondence to: \@corresp\fi\\*[2mm]
+       \if@noauthor\else Correspondence: \@corresp\fi\\*[2mm]
        \@sentence}
     \else
       \if@noauthor\else
-        {\small Correspondence to: \@corresp}%
+        {\small Correspondence: \@corresp}%
       \fi
     \fi
     \end{nolinenumbers}%
@@ -763,46 +850,89 @@
 \fi%stage
 \if@stage@final
   \if@sansserifface
-    \def\section{\@startsection{section}{1}{\z@}
+    \def\section{\@dolinesectrue\@startsection{section}{1}{\z@}
       {-3.5ex\@plus-1ex\@minus-0.2ex}
-      {2.3ex\@plus0.2ex}
+      {\if@secline2.3ex\else2.3ex\@plus0.2ex\fi}
       {\raggedright\normalsize\sffamily\bfseries\mathversion{sansbold}\upshape\noindent\color{textcol}}}
-    \def\subsection{\@startsection{subsection}{2}{\z@}
-      {-3.25ex\@plus-1ex\@minus-0.2ex}
-      {1.5ex\@plus0.2ex}
+    \def\subsection{\@dolinesectrue\@startsection{subsection}{2}{\z@}
+      {\if@secline-3ex\@plus-1ex\@minus-0.2ex\else-3.25ex\@plus-1ex\@minus-0.2ex\fi}
+      {\if@secline1.25ex\else1.5ex\@plus0.2ex\fi}
       {\raggedright\normalsize\sffamily\mdseries\mathversion{sans}\upshape\noindent\color{textcol}}}
-    \def\subsubsection{\@startsection{subsubsection}{3}{\z@}
-      {-3.25ex\@plus-1ex\@minus-0.2ex}
-      {1.5ex\@plus0.2ex}
+    \def\subsubsection{\@dolinesectrue\@startsection{subsubsection}{3}{\z@}
+      {\if@secline-3ex\@plus-1ex\@minus-0.2ex\else-3.25ex\@plus-1ex\@minus-0.2ex\fi}
+      {\if@secline1.25ex\else1.5ex\@plus0.2ex\fi}
       {\raggedright\normalsize\sffamily\mdseries\mathversion{sans}\upshape\noindent\color{textcol}}}
   \else%classical
-    \def\section{\@startsection{section}{1}{\z@}
+    \def\section{\@dolinesectrue\@startsection{section}{1}{\z@}
       {-2em\@plus-1ex\@minus-.2ex}
-      {1em\@plus.2ex}
+      {\if@secline1.15em\else1em\@plus.2ex\fi}
       {\raggedright\normalfont\normalsize\bfseries\mathversion{bold}}}
-    \def\subsection{\@startsection{subsection}{2}{\z@}
+    \def\subsection{\@dolinesectrue\@startsection{subsection}{2}{\z@}
       {-1em\@plus-0.25ex\@minus-.2ex}
-      {1em\@plus.2ex}
+      {\if@secline1.15em\else1em\@plus.2ex\fi}
       {\raggedright\normalfont\normalsize\bfseries\mathversion{bold}}}
-    \def\subsubsection{\@startsection{subsubsection}{3}{\z@}
+    \def\subsubsection{\@dolinesectrue\@startsection{subsubsection}{3}{\z@}
       {-1em\@plus-0.25ex\@minus-.2ex}
-      {1em\@plus.2ex}
+      {\if@secline1.15em\else1em\@plus.2ex\fi}
       {\raggedright\normalsize\normalfont\bfseries\mathversion{bold}}}
   \fi%final
 \else%discussions
-  \def\section{\@startsection{section}{1}{\z@}
+  \def\section{\@dolinesectrue\@startsection{section}{1}{\z@}
     {-2em\@plus-1ex\@minus-.2ex}
     {1em\@plus.2ex}
     {\raggedright\normalfont\normalsize\bfseries\mathversion{bold}}}
-  \def\subsection{\@startsection{subsection}{2}{\z@}
+  \def\subsection{\@dolinesectrue\@startsection{subsection}{2}{\z@}
     {-1em\@plus-0.25ex\@minus-.2ex}
     {1em\@plus.2ex}
     {\raggedright\normalfont\normalsize\bfseries\mathversion{bold}}}
-  \def\subsubsection{\@startsection{subsubsection}{3}{\z@}
+  \def\subsubsection{\@dolinesectrue\@startsection{subsubsection}{3}{\z@}
     {-1em\@plus-0.25ex\@minus-.2ex}
     {1em\@plus.2ex}
     {\raggedright\normalfont\normalsize\bfseries\mathversion{bold}}}
 \fi
+\def\@startsection#1#2#3#4#5#6{%
+  \gdef\cur@secdepth{#2}%
+  \if@noskipsec \leavevmode \fi
+  \par
+  \@tempskipa #4\relax
+  \@afterindenttrue
+  \ifdim \@tempskipa <\z@
+    \@tempskipa -\@tempskipa \@afterindentfalse
+  \fi
+  \if@nobreak
+    \everypar{}%
+  \else
+    \addpenalty\@secpenalty\addvspace\@tempskipa
+  \fi
+  \if@secline\let\@secline@omitted\relax\fi
+  \@ifstar
+    {\@ssect{#3}{#4}{#5}{#6}}%
+    {\@dblarg{\@sect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+\def\@afterheading{%
+  \@nobreaktrue
+  \everypar{%
+    \if@nobreak
+      \@nobreakfalse
+      \clubpenalty \@M
+      \if@afterindent \else
+        {\setbox\z@\lastbox}%
+      \fi
+      \if@secline
+        \if@dolinesec
+          \if@sansserifface
+            \rlap{\smash{\expandafter\ifnum\cur@secdepth>\@ne\raise1.2\baselineskip\else\raise1.5\baselineskip\fi\hbox{\vrule width\hsize height\arrayrulewidth\relax}}}%
+          \else
+            \rlap{\smash{\raise1.5\baselineskip\hbox{\vrule width\hsize height\arrayrulewidth\relax}}}%
+          \fi
+        \fi%
+        \@dolinesecfalse
+        \global\let\@secline@omitted\@undefined
+      \fi
+    \else
+      \clubpenalty \@clubpenalty
+      \everypar{}%
+    \fi}%
+}
 \let\paragraph=\subsubsection
 \let\subparagraph=\paragraph
 \if@stage@final
@@ -820,9 +950,43 @@
 \def\labelitemii{\bfseries\textendash}
 \def\labelitemiii{$\m@th\bullet$}
 \def\labelitemiv{$\m@th\cdot$}
+\def\itemize{%
+  \if@secline
+    \ifx\@secline@omitted\relax
+      \leavevmode
+      \nobreak
+      \vspace*{-1.72\baselineskip}%
+      \global\let\@secline@omitted\@undefined
+    \fi
+  \fi
+  \ifnum \@itemdepth >\thr@@\@toodeep\else
+    \advance\@itemdepth\@ne
+    \edef\@itemitem{labelitem\romannumeral\the\@itemdepth}%
+    \expandafter
+    \list
+      \csname\@itemitem\endcsname
+      {\def\makelabel##1{\hss\llap{##1}}}%
+  \fi}
 \let\@abslang\relax
+\long\def\secondabstract#1{%
+  \subpdfbookmark{\secabstractname.}{\secabstractname.}%
+  \toks@{%
+    \if@abstractindented\else\if@stage@final
+      \noindent\textcolor{textcol}{\reset@font\normalsize\if@sansserifface\sffamily\fi\bfseries \secabstractname.} \ignorespaces\enskip
+    \fi\fi
+    #1}
+  \immediate\write\@auxout{\string\gdef\string\second@bstract{\the\toks@}}%
+  \if@abstractindented\else
+    \if@stage@final
+    \else
+      \section*{\secabstractname}
+      \second@bstract
+    \fi
+  \fi
+}
+
 \if@stage@final
-  \if@abstractcentered%modern
+  \ifnum\if@abstractcentered1\else\if@abstractindented1\else0\fi\fi=1\relax%modern oder indented
     \long\def\abstract{%
       \immediate\write\@auxout{\string\gdef\string\abstractexists{true}}%
       \iflanguage{ngerman}{\@abslang}{\iflanguage{german}{\@abslang}{}}%
@@ -855,7 +1019,9 @@
       \reset@font\normalsize\par\noindent
       \subpdfbookmark{\abstractname}{abstract}%
       \textcolor{textcol}{\reset@font\normalsize\if@sansserifface\sffamily\fi\bfseries\abstractname.} \ignorespaces}
-     {\if!\@keyw!\else
+     {%
+       \ifx\second@bstract\@undefined\else\vskip\baselineskip\second@bstract\fi
+       \if!\@keyw!\else
         \par\vspace{1.7mm}\noindent
         \textbf{Keywords.}\enspace\ignorespaces\@keyw
       \fi
@@ -961,9 +1127,12 @@
 \RequirePackage{textcomp}
 \ifx\xmltexversion\@undefined
   \RequirePackage[utf8]{inputenc}
-  \DeclareUnicodeCharacter{394}{$\Delta$}
+  \DeclareUnicodeCharacter{0394}{$\Delta$}
   \DeclareUnicodeCharacter{8710}{$\Delta$}
+  \DeclareUnicodeCharacter{0331}{\cmrng}
+  \DeclareUnicodeCharacter{014B}{\cmrng}
 \fi
+\def\cmrng{{\fontfamily{cmr}\selectfont\ng}}
 \let\old@classoptionslist\@classoptionslist
 \edef\@classoptionslist{english,\old@classoptionslist}
 \RequirePackage{babel}
@@ -986,11 +1155,13 @@
 \fi
 \def\@tempa{%
   \def\introductionname{Introduction}%
+  \def\secabstractname{Kurzfassung}%
   \def\conclusionname{Conclusions}%
   \def\copyrightstatementname{Copyright statement}%
   \def\codeavailabilityname{Code availability}%
   \def\dataavailabilityname{Data availability}%
   \def\codedataavailabilityname{Code and data availability}%
+  \def\sampleavailabilityname{Sample availability}%
   \def\authorcontributionname{Author contributions}%
   \def\competinginterestsname{Competing interests}%
   \def\teamlistname{Team list}%
@@ -1010,17 +1181,19 @@
 \def\@tempa{%
   \def\figurename{Abb.}%
   \def\abstractname{Kurzfassung}%
+  \def\secabstractname{Abstract}%
   \def\introductionname{Einleitung}%
   \def\conclusionname{Fazit}%
   \def\copyrightstatementname{Urheberrechtserklärung}%
-  \def\codeavailabilityname{Code-Verfügbarkeit}%
-  \def\dataavailabilityname{Daten-Verfügbarkeit}%
-  \def\codedataavailabilityname{Code- und Daten-Verfügbarkeit}%
+  \def\codeavailabilityname{Codeverfügbarkeit}%
+  \def\dataavailabilityname{Datenverfügbarkeit}%
+  \def\codedataavailabilityname{Code- und Datenverfügbarkeit}%
+  \def\sampleavailabilityname{Probenverfügbarkeit}%
   \def\authorcontributionname{Autorenmitwirkung}%
   \def\competinginterestsname{Interessenkonflikt}%
   \def\teamlistname{Gruppenautorenschaft}%
   \def\disclaimername{Haftungsausschluss}%
-  \def\sistatementname{Spezialheft-Erklärung}%
+  \def\sistatementname{Erklärung zum Sonderheft}%
   \def\acknowledgementname{Danksagung}%
   \def\acknowledgementsname{Danksagung}%
   \if@cop@home
@@ -1032,17 +1205,19 @@
 \def\@tempa{%
   \def\figurename{Figure}%
   \def\tablename{Tableau}%
+  \def\secabstractname{Kurzfassung}%
   \def\introductionname{Introduction}%
   \def\conclusionname{Conclusion}%
   \def\copyrightstatementname{Affirmation du droit d'auteur}%
   \def\codeavailabilityname{Disponibilité du code}%
   \def\dataavailabilityname{Disponibilité des données}%
+  \def\sampleavailabilityname{Disponibilité des examples}%
   \def\codedataavailabilityname{Disponibilité du code et des données}%
   \def\authorcontributionname{Collaborateurs}%
   \def\competinginterestsname{Intérêts concurrents}%
   \def\teamlistname{Liste d'auteurs}%
   \def\disclaimername{Clause de non-responsabilité}%
-  \def\sistatementname{Déclaration de numéro special}%
+  \def\sistatementname{Déclaration de la numéro special}%
   \def\acknowledgementname{Remerciements}%
   \def\acknowledgementsname{Remerciements}%
   \if@cop@home
@@ -1302,7 +1477,7 @@
   {\CopernicusWarningNoLine{Cannot find url.sty; proceeding without it}%
    \def\url#1{%
      \CopernicusError{To use \string\url, you must have url.sty}{Install url.sty}}}
-\newcommand\doitext{doi:}
+\newcommand\doitext{https://doi.org/}
 \newcommand*\doi{%
   \begingroup
   \lccode`\~=`\#\relax
@@ -1332,7 +1507,7 @@
   \edef\_{_}%
   \edef\textless{\@percentchar3C}% instead of {\string<} for Apple
   \edef\textgreater{\@percentchar3E}% instead of {\sting>} for Apple
-  \edef\x{\toks1={\noexpand\href{http://dx.doi.org/#1}}}%
+  \edef\x{\toks1={\noexpand\href{https://doi.org/#1}}}%
   \x
   \edef\x{\endgroup\doitext\the\toks1 \the\toks0}%
   \x}
@@ -1440,6 +1615,7 @@
 \newcommand\urlprefix{}
 \renewenvironment{thebibliography}[1]
  {\bibsection
+  \if@secline\leavevmode\vspace*{-\baselineskip}\nobreak\fi
   \parindent\z@
   \bibpreamble
   \bibfont
@@ -1863,19 +2039,38 @@
   \fi
 \fi
 %% some of the following commands are only active if \@cop@hometrue
+\def\texlicencestatement#1{\gdef\@texlicencestatement{#1}}%
+  \def\@texlicencestatement{\CopernicusError{Please add \string\texlicencestatement}{You must provide the licence statement before \string\maketitle"}}
 \def\received#1{\if@cop@home\def\@recvd{#1}\fi}        \def\@recvd{}%+1,+2,+d
 \def\pubdiscuss#1{\if@cop@home\def\@pubdiscuss{#1}\fi} \def\@pubdiscuss{}%+1,+2,-d -- twostagejnltrue
 \def\revised#1{\if@cop@home\def\@revsd{#1}\fi}         \def\@revsd{}%+1,+2,-d
 \def\accepted#1{\if@cop@home\def\@accptd{#1}\fi}       \def\@accptd{}%+1,+2,+d
 \def\published#1{\if@cop@home\gdef\@published{#1}\fi}  \if@stage@final\else\def\@published{}\fi%+1,+2,+d
-\def\firstpage#1{\if@cop@home\ifx\specialp@perstring\@undefined\gdef\@fpage{#1}\fi\fi}
+\def\firstpage#1{\if@cop@home\ifx\specialp@perstring\@undefined\ifx\citati@nbyarticlenumber\@undefined\gdef\@fpage{#1}\fi\fi\fi}
                                                        \def\@fpage{1}%+1,+2,+d
+\def\articlenumber#1{\if@cop@home\ifx\specialp@perstring\@undefined\ifx\citati@nbyarticlenumber\relax\gdef\@fpage{#1}\fi\fi\fi}
+\def\citationbyarticlenumber{%
+  \@nolastpagetrue
+  \let\citati@nbyarticlenumber\relax
+  \def\@fpage{-1}}
+\ifx\xmltexversion\@undefined
+  \@onlypreamble\citationbyarticlenumber
+\fi
 \def\pubyear#1{\if@cop@home\ifx\specialp@perstring\@undefined\gdef\@pyear{#1}\fi\gdef\@cyear{#1}\fi}
                                                        \def\@pyear{\number\year}%+1,+2,+d
                                                        \let\@cyear\@pyear
 \def\pubvol#1{\if@cop@home\ifx\specialp@perstring\@undefined\gdef\@pvol{#1}\fi\fi}%+1,+2,+d
 \let\pubnum\@gobble%not for TeX, only for secondary data use
 \def\correspondence#1{\gdef\@corresp{#1}}              \def\@corresp{}%+1,+2,+d
+\def\citationstatement#1{%
+  \edef\@@doi{https://doi.org/10.5194/\@journalnameshortlower-\@pvol-\@fpage-\@pyear}%
+  \def\@tempa{#1}%
+  \ifx\@tempa\@empty
+    \gdef\@howtocite{}%
+  \else
+    \gdef\@howtocite{#1, \@journalnameabbreviation, \@pvol, \@fpage--\@lpage, \expandafter\url{\@@doi}, \@pyear.}%
+  \fi
+}\def\@howtocite{}%+1,+2,+d
 \def\msnumber#1{\if@cop@home\gdef\@msnumber{#1}\fi}
 \if@stage@final
 \else
@@ -1897,10 +2092,11 @@
   \fi
   \AtBeginDocument{%
     \ifx\specialp@perstring\@undefined\else
-      \def\origfirstpage#1{\gdef\@fpage{#1}}
+      \def\origfirstpage#1{\ifx\citati@nbyarticlenumber\@undefined\gdef\@fpage{#1}\fi}
       \def\origlastpage#1{\gdef\@lpage{#1}}
       \def\origpubyear#1{\gdef\@pyear{#1}}
       \def\origpubvol#1{\gdef\@pvol{#1}}
+      \def\origarticlenumber#1{\ifx\citati@nbyarticlenumber\relax\gdef\@fpage{#1}\fi}
     \fi}
 \else
   \def\@pvol{0}
@@ -2065,16 +2261,24 @@
       {}}
 \fi
 \def\Supplementary#1{{%
-  \advance\partopsep\baselineskip
+  \advance\partopsep0.5\baselineskip
+  \setbox\longtwo@box\vbox{%2- und 3-zeilige Supplement-Blöcke sollen den gleichen vertikalen Raum in Anspruch nehmen
   \begin{trivlist}\bfseries
-  \if@stage@final\raggedright\fi
+  \if@stage@final
+    \let\\\@centercr\@rightskip\z@\@plus\tw@ em
+    \rightskip\@rightskip
+    \parindent\z@
+  \fi
   \item The Supplement related to this article is available online at
     \if@stage@final\else\\\fi
     \supplement{#1}.
-  \end{trivlist}}}
+  \end{trivlist}}%
+  \ifdim\ht\longtwo@box<60\p@\vskip0.5\baselineskip\fi
+  \unvcopy\longtwo@box
+  \ifdim\ht\longtwo@box<60\p@\vskip0.5\baselineskip\fi}}
 \def\generateCommand#1#2{%
   \expandafter\long\expandafter\def\csname#1\endcsname##1{%
-    \if@stage@final\addvspace{2\baselineskip}\fi
+    \if@stage@final\ifhmode\vskip2\baselineskip\else\addvspace{2\baselineskip}\fi\fi
     \bgroup
     \list{}{\labelwidth\z@ \leftmargin\z@ \itemindent-\leftmargin
             \parsep\z@
@@ -2096,15 +2300,16 @@
     ##1#2}}
 \generateCommand{copyrightstatement}{\endlist\egroup}
 \ifessd
-  \long\def\codeavailability#1{\section{\codeavailabilityname}#1}
-  \long\def\dataavailability#1{\section{\dataavailabilityname}#1}
-  \long\def\codedataavailability#1{\section{\codedataavailabilityname}#1}
+  \long\def\codeavailability#1{\ifx\thesection\theolds\else\noappendix\fi\section{\codeavailabilityname}#1}
+  \long\def\dataavailability#1{\ifx\thesection\theolds\else\noappendix\fi\section{\dataavailabilityname}#1}
+  \long\def\codedataavailability#1{\ifx\thesection\theolds\else\noappendix\fi\section{\codedataavailabilityname}#1}
 \else
   \generateCommand{codeavailability}    {\endlist\egroup}
   \generateCommand{dataavailability}    {\endlist\egroup}
   \generateCommand{codedataavailability}{\endlist\egroup}
 \fi
 \generateCommand{authorcontribution}{\endlist\egroup}
+\generateCommand{sampleavailability}{\endlist\egroup}
 \generateCommand{competinginterests}{\endlist\egroup}
 \generateCommand{teamlist}          {\endlist\egroup}
 \generateCommand{disclaimer}        {\endlist\egroup}
@@ -2232,7 +2437,13 @@
 \newcommand\@journalnameshortlower{jn}
 \newcommand\@journalurl{www.jn.net}
 \newcommand\@journalpublisher{Copernicus Publications}
-\newcommand\@journalcopyright{\copyright\ Author(s)\ \@cyear. CC Attribution 3.0 License.}
+\newcommand\@journalcopyright{%
+  \copyright\ Author(s)\ \@cyear. %
+  \if!\@texlicencestatement!%
+    \CopernicusError{\string\texlicencestatement{} must have content}{Say, e.g., "\string\texlicencestatement{CC Attribution 4.0 License.}"}%
+  \else
+    \@texlicencestatement
+  \fi}
 \newcommand\@journalstartyear{2013}
 \newcommand\@journallogo{Journallogo}
 \newcommand\@sentence{Sentence.}
@@ -2261,6 +2472,8 @@
   \edef\@journalnameshort{\@journalnameshort D}
   \edef\@journalnameshortlower{\@journalnameshortlower d}
 \fi
+\newwrite\@pagelistfile
+\immediate\openout\@pagelistfile=\jobname.pagelist\relax
 \endinput
 %%
 %% End of file `copernicus.cls'.
